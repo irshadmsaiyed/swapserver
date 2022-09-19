@@ -1,0 +1,367 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model subject {
+  id               Int               @id @unique @default(autoincrement())
+  subject_name     String
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+  subject_teachers subject_teacher[]
+}
+
+model subject_teacher {
+  id               Int       @id @unique @default(autoincrement())
+  educational_year String
+  classroom        classroom @relation(fields: [classroom_id], references: [id])
+  classroom_id     Int
+  employee         employee  @relation(fields: [teacher_id], references: [id])
+  teacher_id       Int
+  subject          subject   @relation(fields: [subject_id], references: [id])
+  subject_id       Int
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+}
+
+model session {
+  id               Int       @id @unique @default(autoincrement())
+  educational_year String
+  session1_start   DateTime
+  session1_end     DateTime
+  session2_start   DateTime
+  session2_end     DateTime
+  diwali_start     DateTime
+  diwali_end       DateTime
+  summer_start     DateTime
+  summer_end       DateTime
+  other_start      DateTime?
+  other_end        DateTime?
+  other_details    String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+}
+
+model working_days {
+  id               Int      @id @unique @default(autoincrement())
+  educational_year String
+  month            Int
+  educational_days Int
+  teaching_days    Int
+  nonteaching_days Int
+  service_days     Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}
+
+model employee {
+  id                         Int               @id @unique @default(autoincrement())
+  first_name                 String
+  middle_name                String
+  last_name                  String
+  address                    String
+  city                       String
+  taluka                     String
+  district                   String
+  pin                        Int
+  state                      String
+  birth_date                 DateTime
+  gender                     String
+  caste                      String
+  religion                   String
+  mobile_no1                 String
+  mobile_no2                 String?
+  whatsapp_no                String
+  email                      String?
+  appointment_nature         String
+  experience_years           Int
+  joining_date               DateTime
+  educational_qualification  String
+  professional_qualification String
+  driving_licence            String?
+  appointed_section          String
+  designation                String
+  medium                     String
+  appointed_subject          String
+  main_subject1              String
+  main_subject2              String
+  subsidiary_subject1        String?
+  subsidiary_subject2        String?
+  subsidiary_subject3        String?
+  monthly_salary             Int
+  sanctioned_leave           Int
+  aadhar_no                  String?
+  pan_no                     String?
+  bank_account               String?
+  bank_name                  String?
+  branch_name                String?
+  ifsc_code                  String?
+  recruited_by               String?
+  profile_image              String?
+  created_at                 DateTime          @default(now())
+  updated_at                 DateTime          @updatedAt
+  classroom                  classroom?
+  subject_teachers           subject_teacher[]
+  employee_leaves            employee_leave[]
+  vehicle                    vehicle?
+}
+
+model classroom {
+  id               Int               @id @unique @default(autoincrement())
+  educational_year String
+  standard         String
+  division         String
+  medium           String
+  section          String
+  stream           String
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+  employee         employee          @relation(fields: [teacher_id], references: [id])
+  teacher_id       Int               @unique
+  subject_teacher  subject_teacher[]
+}
+
+model employee_leave {
+  id               Int      @id @unique @default(autoincrement())
+  educational_year String
+  leave_month      Int
+  leave_date       DateTime
+  leave_type       String
+  leave_reason     String
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  employee         employee @relation(fields: [employee_id], references: [id])
+  employee_id      Int
+}
+
+model vehicle {
+  id                    Int      @id @unique @default(autoincrement())
+  registration_no       String
+  registration_validity DateTime
+  insurance_policyno    String
+  insurance_validity    DateTime
+  puc_certino           String
+  puc_validity          DateTime
+  vehicle_image         String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+  employee              employee @relation(fields: [driver_id], references: [id])
+  driver_id             Int      @unique
+  roots                 root[]
+}
+
+model root {
+  id           Int      @id @unique @default(autoincrement())
+  root_name    String
+  root_rent    Int
+  pickup_point String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  vehicle      vehicle  @relation(fields: [vehicle_id], references: [id])
+  vehicle_id   Int
+}
+
+model student {
+  id                    Int               @id @unique @default(autoincrement())
+  educational_year      String
+  addmission_date       DateTime
+  school_id             Int
+  standard              String
+  division              String
+  section               String
+  medium                String
+  stream                String
+  first_name            String
+  middle_name           String
+  last_name             String
+  mother_name           String
+  address               String
+  village               String
+  taluka                String
+  district              String
+  state                 String
+  pin                   Int
+  habitation            String
+  birth_date            DateTime
+  birth_place           String
+  gender                String
+  religion              String
+  caste                 String
+  parent_mobileno1      String
+  live_withguardian     Boolean
+  is_orphan             Boolean
+  cwsn_status           String
+  bus_rootno            Int
+  is_repeater           Boolean
+  livein_hostel         Boolean
+  rte_addmission        Boolean
+  roll_no               Int?
+  gr_no                 Int?
+  aadhar_diseno         String?
+  aadhar_cardno         String?
+  birth_taluko          String?
+  birth_district        String?
+  birth_state           String?
+  grandfather_name      String?
+  father_aadharno       String?
+  mother_aadharno       String?
+  parent_income         Int?
+  parent_occupation     String?
+  parent_mobileno2      String?
+  parent_whatsappno     String?
+  parent_email          String?
+  ration_cardno         String?
+  isbpl_rationcard      Boolean?
+  bank_accountno        String?
+  bank_name             String?
+  branch_name           String?
+  ifsc_code             String?
+  preschool_name        String?
+  preschool_address     String?
+  preschool_village     String?
+  preschool_taluka      String?
+  preschool_district    String?
+  preschool_state       String?
+  preschool_result      Float?
+  school_leftdate       DateTime?
+  school_leftreason     String?
+  payable_schoolfee     Int?
+  payable_busfee        Int?
+  payable_hostelfee     Int?
+  paid_schoolfee        Int?
+  paid_busfee           Int?
+  paid_hostelfee        Int?
+  unpaid_schoolfee      Int?
+  unpaid_busfee         Int?
+  unpaid_hostelfee      Int?
+  total_payablefee      Int?
+  total_paidfee         Int?
+  total_unpaidfee       Int?
+  feedue_date           DateTime?
+  mentor_id             Int?
+  guardian_firstname    String?
+  guardian_middlename   String?
+  guardian_lastname     String?
+  guardian_address      String?
+  guardian_village      String?
+  guardian_taluka       String?
+  guardian_district     String?
+  guardian_state        String?
+  guardian_pin          Int?
+  guardian_mobileno1    String?
+  guardian_mobileno2    String?
+  guardian_whatsappno   String?
+  guardian_landlineno   String?
+  guardian_relationship String?
+  created_at            DateTime          @default(now())
+  updated_at            DateTime          @updatedAt
+  profile_image         String?
+  username              String?
+  password              String?
+  active                Boolean           @default(true)
+  fee_transactions      fee_transaction[]
+}
+
+model fee {
+  id               Int      @id @unique @default(autoincrement())
+  educational_year String
+  standard         String
+  medium           String
+  stream           String
+  addmission_fee   Int
+  enrollment_fee   Int
+  semester1_fee    Int
+  semester2_fee    Int
+  semester3_fee    Int
+  semester4_fee    Int
+  tution_fee       Int
+  laboratory_fee   Int
+  library_fee      Int
+  computer_fee     Int
+  craft_fee        Int
+  amenity_fee      Int
+  diary_fee        Int
+  hostel_fee       Int
+  annual_fee       Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}
+
+model fee_transaction {
+  id               Int       @id @unique @default(autoincrement())
+  educational_year String
+  school_id        Int
+  student_id       Int
+  fee_type         String
+  fee_amount       Int
+  fee_paiddate     DateTime
+  employee_id      Int
+  payment_mode     String
+  upi_refno        String?
+  check_no         String?
+  check_date       DateTime?
+  bank_name        String?
+  branch_name      String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  student          student   @relation(fields: [student_id], references: [id])
+}
+
+model school {
+  id                         Int       @id @unique @default(autoincrement())
+  name                       String
+  lowest_class               String
+  highest_class              String
+  medium                     String
+  category                   String
+  management                 String
+  address                    String
+  village                    String
+  taluka                     String
+  district                   String
+  state                      String
+  pin                        Int
+  habitation                 String
+  latitude                   String?
+  longitude                  String?
+  email                      String
+  landline_no                String?
+  principal_name             String
+  principal_contactno        String
+  admin_name                 String
+  admin_contactno            String
+  establish_date             DateTime
+  primary_recognitiondate    DateTime?
+  upprimary_recognitiondate  DateTime?
+  secondary_recognitiondate  DateTime?
+  hsecondary_recognitiondate DateTime?
+  affiliation_board          String?
+  ssc_indexno                String?
+  hsc_indexno                String?
+  udise_code                 String?
+  bank_accountno             String
+  account_holdername         String
+  bank_name                  String
+  branch_name                String
+  ifsc_code                  String
+  crc_name                   String?
+  qdc_name                   String?
+  svs_name                   String?
+  panchayat_name             String?
+  assemblyarea_name          String?
+  parliamentarea_name        String?
+  created_at                 DateTime  @default(now())
+  updated_at                 DateTime  @updatedAt
+}
+
+model demo {
+  id      Int      @id @unique @default(autoincrement())
+  section String[]
+}
